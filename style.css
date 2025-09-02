@@ -1,0 +1,16 @@
+body {
+  background-color: #111;
+  color: #0f0;
+  font-family: monospace;
+  text-align: center;
+}
+
+#game {
+  font-size: 16px;
+  line-height: 1.2;
+  display: inline-block;
+  text-align: left;
+  background: black;
+  padding: 10px;
+  border: 2px solid #0f0;
+}
