@@ -222,9 +222,13 @@ function render() {
         if (enemyHere) {
           span = `<span class="${enemyHere.type === 'chaser' ? 'chaser' : 'enemy'}">` +(enemyHere.type === 'chaser' ? 'C' : 'E') + '</span>';
         } else if (items.some(it => it.x === x && it.y === y)) {
-          span = '<span class="item">✦</span>';
+          span = '<span class="item">$</span>';
         } else {
-          span = `<span class="${map[y][x] === '#' ? 'wall' : 'floor'}">${map[y][x]}</span>`;
+          if (map[y][x] === ">") {
+            span = '<span class="stairs">></span>'; 
+          } else {
+            span = `<span class="${map[y][x] === '#' ? 'wall' : 'floor'}">${map[y][x]}</span>`;
+          }
         }
       }
       output += span;
