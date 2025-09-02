@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>遊び方 - 深化する迷宮</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    table {
+      width: 80%;
+      margin: 20px auto;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #333;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    th {
+      background-color: #ff0000;
+    }
+    .howto {
+      text-align: center;
+    }
+    button {
+      margin-top: 20px;
+      padding: 8px 16px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="howto">
+    <h2>遊び方</h2>
+    <table>
+      <tr>
+        <th>記号 / 操作</th>
+        <th>説明</th>
+      </tr>
+      <tr>
+        <td>@</td>
+        <td>プレイヤーです。</td>
+      </tr>
+      <tr>
+        <td>WASD / 矢印キー</td>
+        <td>移動します。</td>
+      </tr>
+      <tr>
+        <td>「>」</td>
+        <td>階段です。進むとフロアが深くなります。</td>
+      </tr>
+      <tr>
+        <td>フロアの深さ</td>
+        <td>深くなるほど、敵の行動が複雑になります。</td>
+      </tr>
+      <tr>
+        <td>「✦」アイテム</td>
+        <td>5フロアごとに出現。拾うと敵が1体消滅します。</td>
+      </tr>
+      <tr>
+        <td>追従する敵 (C)</td>
+        <td>9F以降に出現します。</td>
+      </tr>
+      <tr>
+        <td>敵</td>
+        <td>接触するとゲームオーバーです。</td>
+      </tr>
+    </table>
+    <button onclick="location.href='index.html'">← タイトルへ戻る</button>
+  </div>
+</body>
+</html>

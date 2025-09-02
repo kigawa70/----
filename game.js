@@ -8,17 +8,7 @@ let enemies = []; // 敵のリスト
 let items = [];   // アイテムのリスト
 let enemyBaseReduction = 0; // 敵の母数を恒久的に減らす
 
-document.addEventListener("keydown", (e) => {
-  switch (e.key.toLowerCase()) {
-    // --- 矢印キー ---
-    case "arrowup": move(0, -1); break;
-    case "arrowdown": move(0, 1); break;
-    case "arrowleft": move(-1, 0); break;
-    case "arrowright": move(1, 0); break;
 
-    case "q": logMessage("ゲーム終了！"); break;
-  }
-});
 
 
 function generateMap() {
@@ -231,7 +221,7 @@ function render() {
         if (enemyHere) {
           output += enemyHere.type === "chaser" ? "C" : "E";
         } else if (items.some(it => it.x === x && it.y === y)) {
-          output += "*"; // アイテム表示
+          output += "✦"; // アイテム表示
         } else {
           output += map[y][x];
         }
@@ -272,6 +262,11 @@ document.addEventListener("keydown", (e) => {
     case "s": move(0, 1); break;
     case "a": move(-1, 0); break;
     case "d": move(1, 0); break;
+
+    case "arrowup": move(0, -1); break;
+    case "arrowdown": move(0, 1); break;
+    case "arrowleft": move(-1, 0); break;
+    case "arrowright": move(1, 0); break;
     case "q": alert("ゲーム終了！"); break;
   }
 });
