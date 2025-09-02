@@ -8,6 +8,18 @@ let enemies = []; // 敵のリスト
 let items = [];   // アイテムのリスト
 let enemyBaseReduction = 0; // 敵の母数を恒久的に減らす
 
+document.addEventListener("keydown", (e) => {
+  switch (e.key.toLowerCase()) {
+    // --- 矢印キー ---
+    case "arrowup": move(0, -1); break;
+    case "arrowdown": move(0, 1); break;
+    case "arrowleft": move(-1, 0); break;
+    case "arrowright": move(1, 0); break;
+
+    case "q": logMessage("ゲーム終了！"); break;
+  }
+});
+
 
 function generateMap() {
   map = Array.from({ length: HEIGHT }, () =>
@@ -248,7 +260,7 @@ function nextFloor() {
 
 function resetGame() {
   floor = 1;
-  nextFloorEnemyReduction = 0;
+  enemyBaseReduction = 0;
   generateMap();
   placePlayer();
   render();
