@@ -146,7 +146,8 @@ function checkItemPickup() {
       enemies.splice(removeIndex, 1);
     }
     enemyBaseReduction++; // 恒久的に母数を1減らす
-    alert("アイテムを拾った！ 敵の総数が1体減少した！");
+    logMessage("アイテムを拾った！ 敵の総数が1体減少した！");
+
   }
 }
 
@@ -201,8 +202,8 @@ function enemyTurn() {
     }
 
     if (e.x === playerX && e.y === playerY) {
-      alert("ゲームオーバー！ Floor: " + floor);
-      resetGame();
+        logMessage("ゲームオーバー！ Floor: " + floor);
+        resetGame();
     }
   });
 }
@@ -228,6 +229,15 @@ function render() {
   }
   document.getElementById("game").textContent = output;
 }
+
+function logMessage(msg) {
+  const logDiv = document.getElementById("log");
+  const p = document.createElement("p");
+  p.textContent = msg;
+  logDiv.appendChild(p);
+  logDiv.scrollTop = logDiv.scrollHeight; // 常に最新が見えるように
+}
+
 
 function nextFloor() {
   floor++;
