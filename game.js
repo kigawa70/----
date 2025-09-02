@@ -5,6 +5,8 @@ let playerX, playerY;
 let floor = 1; // 現在のフロア
 let stairsX, stairsY;
 let enemies = []; // 敵のリスト
+let items = [];   // アイテムのリスト
+let enemyBaseReduction = 0; // 敵の母数を恒久的に減らす
 
 
 function generateMap() {
@@ -28,6 +30,13 @@ function generateMap() {
 
   placeStairs();
   placeEnemies();
+
+  // --- アイテムは5フロアごとに1つ出現 ---
+  if ((floor - 1) % 5 === 0) {
+    placeItems();
+  } else {
+    items = [];
+  }
 }
 
 function placePlayer() {
@@ -35,11 +44,8 @@ function placePlayer() {
     let x = Math.floor(Math.random() * WIDTH);
     let y = Math.floor(Math.random() * HEIGHT);
     if (map[y][x] === ".") {
-      // 一時的にプレイヤー位置をセット
       playerX = x;
       playerY = y;
-
-      // ちゃんと階段まで行けるか確認
       if (isReachable(playerX, playerY, stairsX, stairsY)) {
         break;
       }
@@ -76,7 +82,6 @@ function isReachable(sx, sy, tx, ty) {
   return false;
 }
 
-
 function placeStairs() {
   while (true) {
     let x = Math.floor(Math.random() * WIDTH);
@@ -94,19 +99,19 @@ function placeEnemies() {
   enemies = [];
   let enemyCount = 2 + Math.floor((floor - 1) / 3);
 
+  // --- 母数を恒久的に減らす ---
+  enemyCount = Math.max(1, enemyCount - enemyBaseReduction);
+
   for (let i = 0; i < enemyCount; i++) {
     while (true) {
       let x = Math.floor(Math.random() * WIDTH);
       let y = Math.floor(Math.random() * HEIGHT);
       if (map[y][x] === "." && !(x === playerX && y === playerY)) {
-        // --- 9F以降は追従型を追加 ---
         let type = "random";
         if (floor >= 9) {
-          // まずは1体を必ず追従型に
           if (!enemies.some(e => e.type === "chaser")) {
-            type = "chaser";
+            type = "chaser"; // 最低1体は追従型
           } else {
-            // 追加の敵が発生する場合、優先的に追従型を増やす
             if (Math.random() < 0.5) type = "chaser";
           }
         }
@@ -114,6 +119,34 @@ function placeEnemies() {
         break;
       }
     }
+  }
+}
+
+
+function placeItems() {
+  items = [];
+  while (true) {
+    let x = Math.floor(Math.random() * WIDTH);
+    let y = Math.floor(Math.random() * HEIGHT);
+    if (map[y][x] === "." &&
+        !(x === playerX && y === playerY) &&
+        !enemies.some(e => e.x === x && e.y === y)) {
+      items.push({ x, y });
+      break;
+    }
+  }
+}
+
+function checkItemPickup() {
+  let idx = items.findIndex(it => it.x === playerX && it.y === playerY);
+  if (idx !== -1) {
+    items.splice(idx, 1);
+    if (enemies.length > 0) {
+      let removeIndex = Math.floor(Math.random() * enemies.length);
+      enemies.splice(removeIndex, 1);
+    }
+    enemyBaseReduction++; // 恒久的に母数を1減らす
+    alert("アイテムを拾った！ 敵の総数が1体減少した！");
   }
 }
 
@@ -126,6 +159,9 @@ function move(dx, dy) {
     if (tile === "." || tile === ">") {
       playerX = newX;
       playerY = newY;
+
+      checkItemPickup();
+
       if (tile === ">") {
         nextFloor();
         return;
@@ -141,11 +177,9 @@ function enemyTurn() {
     let dx = 0, dy = 0;
 
     if (e.type === "random") {
-      // ランダム移動
       dx = Math.floor(Math.random() * 3) - 1;
       dy = Math.floor(Math.random() * 3) - 1;
     } else if (e.type === "chaser") {
-      // プレイヤー追跡
       if (e.x < playerX) dx = 1;
       else if (e.x > playerX) dx = -1;
       if (e.y < playerY) dy = 1;
@@ -155,7 +189,6 @@ function enemyTurn() {
     let newX = e.x + dx;
     let newY = e.y + dy;
 
-    // 移動可能なら進む
     if (
       newX >= 0 && newX < WIDTH &&
       newY >= 0 && newY < HEIGHT &&
@@ -167,7 +200,6 @@ function enemyTurn() {
       e.y = newY;
     }
 
-    // プレイヤーに到達したらゲームオーバー
     if (e.x === playerX && e.y === playerY) {
       alert("ゲームオーバー！ Floor: " + floor);
       resetGame();
@@ -184,7 +216,9 @@ function render() {
       } else {
         let enemyHere = enemies.find(e => e.x === x && e.y === y);
         if (enemyHere) {
-          output += enemyHere.type === "chaser" ? "C" : "E"; // 追従型はC表示
+          output += enemyHere.type === "chaser" ? "C" : "E";
+        } else if (items.some(it => it.x === x && it.y === y)) {
+          output += "*"; // アイテム表示
         } else {
           output += map[y][x];
         }
@@ -204,6 +238,7 @@ function nextFloor() {
 
 function resetGame() {
   floor = 1;
+  nextFloorEnemyReduction = 0;
   generateMap();
   placePlayer();
   render();
