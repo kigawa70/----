@@ -1,5 +1,8 @@
 const WIDTH = 30;
 const HEIGHT = 15;
+const bgm = document.getElementById("bgm");
+bgm.volume = 0.5;   // 音量0〜1で調整
+bgm.play();
 let map = [];
 let playerX, playerY;
 let floor = 1; // 現在のフロア
@@ -9,6 +12,9 @@ let items = [];   // アイテムのリスト
 let enemyBaseReduction = 0; // 敵の母数を恒久的に減らす
 
 
+document.addEventListener("keydown", () => {
+  if (bgm.paused) bgm.play();
+}, { once: true }); // 最初のキー入力で再生
 
 
 function generateMap() {
