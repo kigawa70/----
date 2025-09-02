@@ -214,23 +214,26 @@ function render() {
   let output = `Floor: ${floor}\n`;
   for (let y = 0; y < HEIGHT; y++) {
     for (let x = 0; x < WIDTH; x++) {
+      let span = "";
       if (x === playerX && y === playerY) {
-        output += "@";
+        span = '<span class="player">@</span>';
       } else {
         let enemyHere = enemies.find(e => e.x === x && e.y === y);
         if (enemyHere) {
-          output += enemyHere.type === "chaser" ? "C" : "E";
+          span = `<span class="${enemyHere.type === 'chaser' ? 'chaser' : 'enemy'}">` +(enemyHere.type === 'chaser' ? 'C' : 'E') + '</span>';
         } else if (items.some(it => it.x === x && it.y === y)) {
-          output += "✦"; // アイテム表示
+          span = '<span class="item">✦</span>';
         } else {
-          output += map[y][x];
+          span = `<span class="${map[y][x] === '#' ? 'wall' : 'floor'}">${map[y][x]}</span>`;
         }
       }
+      output += span;
     }
     output += "\n";
   }
-  document.getElementById("game").textContent = output;
+  document.getElementById("game").innerHTML = output;
 }
+
 
 function logMessage(msg) {
   const logDiv = document.getElementById("log");
