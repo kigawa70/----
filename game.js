@@ -1,26 +1,57 @@
+// ====== 可変マップ＆BGM ======
 const BASE_WIDTH = 30;
 const BASE_HEIGHT = 15;
 let WIDTH = BASE_WIDTH;
 let HEIGHT = BASE_HEIGHT;
+
 const bgm = document.getElementById("bgm");
-bgm.volume = 0.5;   // 音量0〜1で調整
+bgm.volume = 0.5;
 bgm.play();
-let map = [];
-let playerX, playerY;
-let floor = 1; // 現在のフロア
-let stairsX, stairsY;
-let enemies = []; // 敵のリスト
-let items = [];   // アイテムのリスト
-let enemyBaseReduction = 0; // 敵の母数を恒久的に減らす
-
-
 document.addEventListener("keydown", () => {
   if (bgm.paused) bgm.play();
-}, { once: true }); // 最初のキー入力で再生
+}, { once: true });
+
+// ====== ゲーム状態 ======
+let map = [];
+let playerX, playerY;
+let floor = 1;
+let stairsX, stairsY;
+let enemies = [];
+let items = [];
+let traps = [];
+let enemyBaseReduction = 0;
+let torchCount = 0;
+
+// ====== 便利関数 ======
+function inBounds(x, y) {
+  return x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT;
+}
+
+function randomEmptyCell() {
+  while (true) {
+    const x = Math.floor(Math.random() * WIDTH);
+    const y = Math.floor(Math.random() * HEIGHT);
+    if (
+      map[y][x] === "." &&
+      !(x === playerX && y === playerY) &&
+      !enemies.some(e => e.x === x && e.y === y) &&
+      !items.some(it => it.x === x && it.y === y) &&
+      !traps.some(t => t.x === x && t.y === y)
+    ) {
+      return { x, y };
+    }
+  }
+}
+
+// ====== 視界 ======
+function getVisionRange() {
+  const baseVision = Math.max(1, 3 - Math.floor(floor / 4)); 
+  return baseVision + torchCount;
+}
 
 
+// ====== マップ生成 ======
 function generateMap() {
-  // フロアに応じてマップサイズ拡張
   WIDTH = BASE_WIDTH + Math.floor(floor / 3);
   HEIGHT = BASE_HEIGHT + Math.floor(floor / 5);
 
@@ -28,13 +59,12 @@ function generateMap() {
     Array.from({ length: WIDTH }, () => "#")
   );
 
-  // 深さに応じて部屋数・サイズを増加
-  let roomCount = 5 + Math.floor(floor / 2);
+  const roomCount = 5 + Math.floor(floor / 2);
   for (let i = 0; i < roomCount; i++) {
-    let rw = Math.floor(Math.random() * 6) + 4 + Math.floor(floor / 3);
-    let rh = Math.floor(Math.random() * 4) + 3 + Math.floor(floor / 3);
-    let rx = Math.floor(Math.random() * (WIDTH - rw - 1));
-    let ry = Math.floor(Math.random() * (HEIGHT - rh - 1));
+    const rw = Math.floor(Math.random() * 6) + 4 + Math.floor(floor / 3);
+    const rh = Math.floor(Math.random() * 4) + 3 + Math.floor(floor / 3);
+    const rx = Math.floor(Math.random() * Math.max(1, (WIDTH - rw - 1)));
+    const ry = Math.floor(Math.random() * Math.max(1, (HEIGHT - rh - 1)));
     for (let y = ry; y < ry + rh && y < HEIGHT; y++) {
       for (let x = rx; x < rx + rw && x < WIDTH; x++) {
         map[y][x] = ".";
@@ -44,13 +74,8 @@ function generateMap() {
 
   placeStairs();
   placeEnemies();
-
-  // --- アイテムは5フロアごとに1つ出現 ---
-  if ((floor - 1) % 5 === 0) {
-    placeItems();
-  } else {
-    items = [];
-  }
+  placeItems();
+  placeTraps();
 }
 
 function placePlayer() {
@@ -67,11 +92,9 @@ function placePlayer() {
   }
 }
 
-// BFSで到達可能性を確認
+// ====== BFS到達確認 ======
 function isReachable(sx, sy, tx, ty) {
-  let visited = Array.from({ length: HEIGHT }, () =>
-    Array(WIDTH).fill(false)
-  );
+  let visited = Array.from({ length: HEIGHT }, () => Array(WIDTH).fill(false));
   let queue = [[sx, sy]];
   visited[sy][sx] = true;
 
@@ -82,12 +105,7 @@ function isReachable(sx, sy, tx, ty) {
     const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
     for (let [dx, dy] of dirs) {
       let nx = x + dx, ny = y + dy;
-      if (
-        nx >= 0 && nx < WIDTH &&
-        ny >= 0 && ny < HEIGHT &&
-        !visited[ny][nx] &&
-        map[ny][nx] !== "#"
-      ) {
+      if (inBounds(nx, ny) && !visited[ny][nx] && map[ny][nx] !== "#") {
         visited[ny][nx] = true;
         queue.push([nx, ny]);
       }
@@ -109,71 +127,76 @@ function placeStairs() {
   }
 }
 
+// ====== 敵（ランダム移動のみ） ======
 function placeEnemies() {
   enemies = [];
   let enemyCount = 2 + Math.floor((floor - 1) / 3);
-
-  // --- 母数を恒久的に減らす ---
   enemyCount = Math.max(1, enemyCount - enemyBaseReduction);
 
   for (let i = 0; i < enemyCount; i++) {
-    while (true) {
-      let x = Math.floor(Math.random() * WIDTH);
-      let y = Math.floor(Math.random() * HEIGHT);
-      if (map[y][x] === "." && !(x === playerX && y === playerY)) {
-        let type = "random";
-        if (floor >= 9) {
-          if (!enemies.some(e => e.type === "chaser")) {
-            type = "chaser"; // 最低1体は追従型
-          } else {
-            if (Math.random() < 0.5) type = "chaser";
-          }
-        }
-        enemies.push({ x, y, type });
-        break;
-      }
-    }
+    const pos = randomEmptyCell();
+    enemies.push({ x: pos.x, y: pos.y, type: "random" });
   }
 }
 
-
+// ====== アイテム配置 ======
 function placeItems() {
   items = [];
-  while (true) {
-    let x = Math.floor(Math.random() * WIDTH);
-    let y = Math.floor(Math.random() * HEIGHT);
-    if (map[y][x] === "." &&
-        !(x === playerX && y === playerY) &&
-        !enemies.some(e => e.x === x && e.y === y)) {
-      items.push({ x, y });
-      break;
-    }
+  if ((floor - 1) % 5 === 0) {
+    const pos = randomEmptyCell();
+    items.push({ x: pos.x, y: pos.y, type: "orb" });
+  }
+  const torchChance = Math.min(0.8, 0.3 + floor * 0.02);
+  if (Math.random() < torchChance) {
+    const pos2 = randomEmptyCell();
+    items.push({ x: pos2.x, y: pos2.y, type: "torch" });
+  }
+}
+
+// ====== 罠配置 ======
+function placeTraps() {
+  traps = [];
+  const trapCount = Math.floor(floor / 2);
+  for (let i = 0; i < trapCount; i++) {
+    const pos = randomEmptyCell();
+    traps.push({ x: pos.x, y: pos.y });
   }
 }
 
 function checkItemPickup() {
   let idx = items.findIndex(it => it.x === playerX && it.y === playerY);
   if (idx !== -1) {
+    const item = items[idx];
     items.splice(idx, 1);
-    if (enemies.length > 0) {
-      let removeIndex = Math.floor(Math.random() * enemies.length);
-      enemies.splice(removeIndex, 1);
+    if (item.type === "torch") {
+      torchCount++;
+      logMessage("松明を拾った！ 視界が広がった！");
+    } else if (item.type === "orb") {
+      if (enemies.length > 0) {
+        const removeIndex = Math.floor(Math.random() * enemies.length);
+        enemies.splice(removeIndex, 1);
+      }
+      enemyBaseReduction++;
+      logMessage("✦アイテムを拾った！ 敵の総数が1体減少した！");
     }
-    enemyBaseReduction++; // 恒久的に母数を1減らす
-    logMessage("アイテムを拾った！ 敵の総数が1体減少した！");
-
   }
 }
 
-
+// ====== 移動 ======
 function move(dx, dy) {
-  let newX = playerX + dx;
-  let newY = playerY + dy;
-  if (newX >= 0 && newX < WIDTH && newY >= 0 && newY < HEIGHT) {
-    let tile = map[newY][newX];
+  const newX = playerX + dx;
+  const newY = playerY + dy;
+  if (inBounds(newX, newY)) {
+    const tile = map[newY][newX];
     if (tile === "." || tile === ">") {
       playerX = newX;
       playerY = newY;
+
+      if (traps.some(t => t.x === playerX && t.y === playerY)) {
+        logMessage("罠を踏んだ！ ゲームオーバー！");
+        resetGame();
+        return;
+      }
 
       checkItemPickup();
 
@@ -187,79 +210,82 @@ function move(dx, dy) {
   render();
 }
 
+// ====== 敵ターン ======
 function enemyTurn() {
   enemies.forEach(e => {
-    let dx = 0, dy = 0;
-
-    if (e.type === "random") {
-      dx = Math.floor(Math.random() * 3) - 1;
-      dy = Math.floor(Math.random() * 3) - 1;
-    } else if (e.type === "chaser") {
-      if (e.x < playerX) dx = 1;
-      else if (e.x > playerX) dx = -1;
-      if (e.y < playerY) dy = 1;
-      else if (e.y > playerY) dy = -1;
-    }
-
-    let newX = e.x + dx;
-    let newY = e.y + dy;
+    const dx = Math.floor(Math.random() * 3) - 1;
+    const dy = Math.floor(Math.random() * 3) - 1;
+    const nx = e.x + dx, ny = e.y + dy;
 
     if (
-      newX >= 0 && newX < WIDTH &&
-      newY >= 0 && newY < HEIGHT &&
-      map[newY][newX] === "." &&
-      !(newX === playerX && newY === playerY) &&
-      !enemies.some(other => other !== e && other.x === newX && other.y === newY)
+      inBounds(nx, ny) &&
+      map[ny][nx] === "." &&
+      !(nx === playerX && ny === playerY) &&
+      !enemies.some(other => other !== e && other.x === nx && other.y === ny)
     ) {
-      e.x = newX;
-      e.y = newY;
+      e.x = nx;
+      e.y = ny;
     }
 
     if (e.x === playerX && e.y === playerY) {
-        logMessage("ゲームオーバー！ Floor: " + floor);
-        resetGame();
+      logMessage("敵に捕まった！ ゲームオーバー！");
+      resetGame();
     }
   });
 }
 
+// ====== レンダリング ======
 function render() {
+  const vision = getVisionRange();
   let output = `Floor: ${floor}\n`;
+
   for (let y = 0; y < HEIGHT; y++) {
     for (let x = 0; x < WIDTH; x++) {
-      let span = "";
-      if (x === playerX && y === playerY) {
-        span = '<span class="player">@</span>';
-      } else {
-        let enemyHere = enemies.find(e => e.x === x && e.y === y);
-        if (enemyHere) {
-          span = `<span class="${enemyHere.type === 'chaser' ? 'chaser' : 'enemy'}">` +(enemyHere.type === 'chaser' ? 'C' : 'E') + '</span>';
+      const dist = Math.abs(x - playerX) + Math.abs(y - playerY);
+
+      // プレイヤー・敵・罠・階段は視界制限
+      if (dist <= vision || items.some(it => it.type === "torch" && it.x === x && it.y === y)) {
+        let span = "";
+        if (x === playerX && y === playerY) {
+          span = '<span class="player">@</span>';
+        } else if (enemies.some(e => e.x === x && e.y === y)) {
+          span = '<span class="enemy">E</span>';
         } else if (items.some(it => it.x === x && it.y === y)) {
-          span = '<span class="item">$</span>';
+          const item = items.find(it => it.x === x && it.y === y);
+          span = item.type === "torch"
+            ? '<span class="torch">i</span>'
+            : '<span class="item">✦</span>';
+        } else if (traps.some(t => t.x === x && t.y === y)) {
+          span = '<span class="trap">x</span>';
+        } else if (map[y][x] === "#") {
+          span = `<span class="wall">#</span>`;
+        } else if (map[y][x] === ">") {
+          span = '<span class="stairs">></span>';
         } else {
-          if (map[y][x] === ">") {
-            span = '<span class="stairs">></span>'; 
-          } else {
-            span = `<span class="${map[y][x] === '#' ? 'wall' : 'floor'}">${map[y][x]}</span>`;
-          }
+          span = `<span class="floor">.</span>`;
         }
+        output += span;
+      } else {
+        output += " ";
       }
-      output += span;
     }
     output += "\n";
   }
+
+  output += `松明: ${torchCount}\n`;
   document.getElementById("game").innerHTML = output;
 }
 
-
+// ====== ログ ======
 function logMessage(msg) {
   const logDiv = document.getElementById("log");
   const p = document.createElement("p");
   p.textContent = msg;
   logDiv.appendChild(p);
-  logDiv.scrollTop = logDiv.scrollHeight; // 常に最新が見えるように
+  logDiv.scrollTop = logDiv.scrollHeight;
 }
 
-
+// ====== フロア遷移 ======
 function nextFloor() {
   floor++;
   generateMap();
@@ -270,26 +296,24 @@ function nextFloor() {
 function resetGame() {
   floor = 1;
   enemyBaseReduction = 0;
+  torchCount = 0;
   generateMap();
   placePlayer();
   render();
 }
 
+// ====== 入力 ======
 document.addEventListener("keydown", (e) => {
   switch (e.key.toLowerCase()) {
-    case "w": move(0, -1); break;
-    case "s": move(0, 1); break;
-    case "a": move(-1, 0); break;
-    case "d": move(1, 0); break;
-
-    case "arrowup": move(0, -1); break;
-    case "arrowdown": move(0, 1); break;
-    case "arrowleft": move(-1, 0); break;
-    case "arrowright": move(1, 0); break;
+    case "w": case "arrowup":    move(0, -1); break;
+    case "s": case "arrowdown":  move(0, 1);  break;
+    case "a": case "arrowleft":  move(-1, 0); break;
+    case "d": case "arrowright": move(1, 0);  break;
     case "q": alert("ゲーム終了！"); break;
   }
 });
 
+// ====== 起動 ======
 generateMap();
 placePlayer();
 render();

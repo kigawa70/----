@@ -63,7 +63,9 @@ button:hover {
 #game span.wall { color: gray; }
 #game span.player { color: blue; font-weight: bold; }
 #game span.stairs { color: orange; }
-#game span.enemy { color: red; }
+#game span.enemy { color: rgb(112, 5, 5); }
 #game span.chaser { color: darkred; font-weight: bold; }
 #game span.item { color: gold; }
+.trap { color: purple; font-weight: bold; }
+.torch { color: #ff8800; font-weight: bold; }
 
