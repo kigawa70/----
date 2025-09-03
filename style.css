@@ -69,3 +69,22 @@ button:hover {
 .trap { color: purple; font-weight: bold; }
 .torch { color: #ff8800; font-weight: bold; }
 
+.modal {
+  display: none; /* 初期は非表示 */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  margin: 10% auto;
+  width: 60%;
+  border-radius: 8px;
+  text-align: center;
+}
