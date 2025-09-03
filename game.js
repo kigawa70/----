@@ -324,3 +324,24 @@ document.addEventListener("keydown", (e) => {
 generateMap();
 placePlayer();
 render();
+
+// --- 遊び方モーダル ---
+window.onload = () => {
+  const modal = document.getElementById("howto-modal");
+  const closeBtn = document.getElementById("close-howto");
+  const howtoBtn = document.getElementById("howto-button");
+
+  // 初回ロード時に表示
+  modal.style.display = "block";
+
+  // 「閉じる」ボタン
+  closeBtn.onclick = () => {
+    modal.style.display = "none";
+  };
+
+  // 「❓遊び方」ボタンで再表示
+  howtoBtn.onclick = (e) => {
+    e.preventDefault();
+    modal.style.display = "block";
+  };
+};
