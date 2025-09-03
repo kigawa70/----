@@ -1,5 +1,7 @@
-const WIDTH = 30;
-const HEIGHT = 15;
+const BASE_WIDTH = 30;
+const BASE_HEIGHT = 15;
+let WIDTH = BASE_WIDTH;
+let HEIGHT = BASE_HEIGHT;
 const bgm = document.getElementById("bgm");
 bgm.volume = 0.5;   // 音量0〜1で調整
 bgm.play();
@@ -18,6 +20,10 @@ document.addEventListener("keydown", () => {
 
 
 function generateMap() {
+  // フロアに応じてマップサイズ拡張
+  WIDTH = BASE_WIDTH + Math.floor(floor / 3);
+  HEIGHT = BASE_HEIGHT + Math.floor(floor / 5);
+
   map = Array.from({ length: HEIGHT }, () =>
     Array.from({ length: WIDTH }, () => "#")
   );
