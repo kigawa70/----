@@ -282,8 +282,15 @@ function logMessage(msg) {
   const p = document.createElement("p");
   p.textContent = msg;
   logDiv.appendChild(p);
-  logDiv.scrollTop = logDiv.scrollHeight;
+
+  // --- 最大5件に制限 ---
+  while (logDiv.childNodes.length > 5) {
+    logDiv.removeChild(logDiv.firstChild);
+  }
+
+  logDiv.scrollTop = logDiv.scrollHeight; // 常に最新が見えるように
 }
+
 
 // ====== フロア遷移 ======
 function nextFloor() {
