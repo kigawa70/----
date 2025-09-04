@@ -60,14 +60,29 @@ button:hover {
   color: #000;
 }
 
-#game span.wall { color: gray; }
+/* ゲーム画面用（今のまま #game に限定してOK） */
+#game span.wall   { color: gray; }
 #game span.player { color: blue; font-weight: bold; }
 #game span.stairs { color: orange; }
-#game span.enemy { color: rgb(112, 5, 5); }
-#game span.chaser { color: darkred; font-weight: bold; }
-#game span.item { color: gold; }
-.trap { color: purple; font-weight: bold; }
-.torch { color: #ff8800; font-weight: bold; }
+#game span.enemy  { color: rgb(112, 5, 5); }
+#game span.item   { color: gold; }
+#game span.trap   { color: purple; font-weight: bold; }
+#game span.torch  { color: #ff8800; font-weight: bold; }
+
+/* 遊び方モーダル専用 */
+#howto-modal td span {
+  font-weight: bold;
+  font-size: 18px; /* ← 少し大きく */
+}
+
+#howto-modal td .player { color: blue; }
+#howto-modal td .stairs { color: orange; }
+#howto-modal td .enemy  { color: rgb(200, 50, 50); } /* ゲームより少し明るめ */
+#howto-modal td .item   { color: gold; }
+#howto-modal td .trap   { color: violet; }
+#howto-modal td .torch  { color: #ff6600; }
+
+
 
 .modal {
   display: none; /* 初期は非表示 */
