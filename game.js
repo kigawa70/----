@@ -5,7 +5,7 @@ let WIDTH = BASE_WIDTH;
 let HEIGHT = BASE_HEIGHT;
 
 const bgm = document.getElementById("bgm");
-bgm.volume = 0.5;
+bgm.volume = 0.3;
 bgm.play();
 document.addEventListener("keydown", () => {
   if (bgm.paused) bgm.play();
