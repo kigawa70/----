@@ -254,7 +254,7 @@ function render() {
           const item = items.find(it => it.x === x && it.y === y);
           span = item.type === "torch"
             ? '<span class="torch">i</span>'
-            : '<span class="item">$</span>';
+            : '<span class="item">+</span>';
         } else if (traps.some(t => t.x === x && t.y === y)) {
           span = '<span class="trap">x</span>';
         } else if (map[y][x] === "#") {
