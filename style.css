@@ -83,7 +83,7 @@ button:hover {
 #howto-modal td .trap   { color: violet; }
 #howto-modal td .torch  { color: #ff6600; }
 
-
+span.clear{ color:rgb(255, 255, 0);}
 
 .modal {
   display: none; /* 初期は非表示 */

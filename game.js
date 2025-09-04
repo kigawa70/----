@@ -295,6 +295,14 @@ function logMessage(msg) {
 // ====== フロア遷移 ======
 function nextFloor() {
   floor++;
+
+  if (floor > 15) {
+    // 30階を超えたらゴール
+    logMessage("✨ 迷宮の最深部に到達した！ゲームクリア！");
+    document.getElementById("game").innerHTML = "<h2>✨ GAME CLEAR ✨</h2><p>おめでとう！</p>";
+    return;
+  }
+
   generateMap();
   placePlayer();
   render();
