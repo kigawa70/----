@@ -168,7 +168,7 @@ function checkItemPickup(){
         enemies.splice(r,1);
       }
       enemyBaseReduction++;
-      logMessage("✦アイテムを拾った！ 敵の総数が1体減少した！");
+      logMessage("✦新潟県産コシヒカリだ！ 朱鷺を1羽撃退した！");
     }
   }
 }
@@ -212,7 +212,7 @@ function enemyTurn(){
       e.x=nx; e.y=ny;
     }
     if(e.x===playerX && e.y===playerY){
-      logMessage("敵に捕まった！ ゲームオーバー！");
+      logMessage("朱鷺に捕まった！ ゲームオーバー！");
       resetGame();
     }
   });
