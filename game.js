@@ -168,7 +168,7 @@ function checkItemPickup(){
         enemies.splice(r,1);
       }
       enemyBaseReduction++;
-      logMessage("✦新潟県産コシヒカリだ！ 朱鷺を1羽撃退した！");
+      logMessage("✦新潟県産コシヒカリだ！ 朱鷺が1羽帰ってくれた！");
     }
   }
 }
