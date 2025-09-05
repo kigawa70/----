@@ -1,90 +1,60 @@
 <!DOCTYPE html>
 <html lang="ja">
-<audio id="bgm" src="bgm (3).mp3" loop></audio>
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>深化する迷宮探索</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    /* モーダル用 */
-    #howto-modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7);
-      color: white;
-      overflow: auto;
-      z-index: 1000;
-    }
-    #howto-modal .content {
-      background: #222;
-      margin: 50px auto;
-      padding: 20px;
-      width: 80%;
-      border-radius: 10px;
-      color: white;
-    }
-    #howto-modal table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      color: white;
-    }
-    #howto-modal th, #howto-modal td {
-      border: 1px solid white;
-      padding: 8px 12px;
-    }
-    #howto-modal th {
-      background-color: #444;
-    }
-    #howto-modal button {
-      margin-top: 10px;
-      padding: 6px 12px;
-      font-size: 16px;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <a href="#" id="show-howto" class="howto-link">❓ 遊び方</a>
+  <!-- BGM -->
+  <audio id="bgm" src="bgm (3).mp3" loop></audio>
+
+  <!-- 画面上部 -->
+  <a href="#" id="howto-button" class="howto-link">❓ 遊び方</a>
   <h1>深化する迷宮探索</h1>
-  <pre id="game"></pre>
+
+  <!-- ゲーム描画領域（pre → divへ） -->
+  <div id="game"></div>
+
+  <!-- ログ -->
   <div id="log"></div>
 
-  <!-- モーダル -->
-  <div id="howto-modal">
-    <div class="content">
+  <!-- モーダル：遊び方 -->
+  <div id="howto-modal" class="modal" style="display:none">
+    <div class="modal-content dark">
       <h2>遊び方</h2>
       <table>
         <tr>
-          <th>記号 / 操作</th>
-          <th>説明</th>
+        <td><span class="tile player"></span></td>
+          <td>プレイヤーです。</td>
         </tr>
-        <tr><td><span class="player">@</span></td><td>プレイヤーです。</td></tr>
-        <tr><td>WASD / 矢印キー</td><td>移動します。</td></tr>
-        <tr><td><span class="stairs">></span></td><td>階段です。進むとフロアが深くなります。</td></tr>
-        <tr><td><span class="item">+</span></td><td>アイテムです。5フロアごとに出現。拾うと敵が1体消滅します。</td></tr>
-        <tr><td><span class="torch">i</span></td><td>松明。ランダム出現。視野が少し広くなります。</td></tr>
-        <tr><td><span class="enemy">E</span></td><td>ランダムに動く敵です。</td></tr>
-        <tr><td><span class="trap">x</span></td><td>罠。踏むとゲームオーバーです。</td></tr>
+        <tr>
+          <td><span class="tile enemy"></span></td>
+          <td>ランダムに動く敵です。</td>
+        </tr>
+        <tr>
+          <td><span class="tile torch"></span></td>
+          <td>視野が少し広くなります。</td>
+        </tr>
+        <tr>
+          <td><span class="tile trap"></span></td>
+          <td>罠。踏むとゲームオーバーです。</td>
+        </tr>
+        <tr>
+          <td><span class="tile stairs"></span></td>
+          <td>階段です。進むとフロアが深くなります。</td>
+        </tr>
+        <tr>
+          <td><span class="tile item"></span></td>
+          <td>アイテムです。拾うと効果が発動します。</td>
+        </tr>
+        <tr><td>WASD / 矢印キー</td><td>移動</td></tr>
+
       </table>
-
-      <h1><span class="clear">15F制覇でクリアです。</span></h1>
-
       <button id="close-howto">閉じる</button>
     </div>
   </div>
 
   <script src="game.js"></script>
-  <script>
-    // モーダル表示
-    const modal = document.getElementById("howto-modal");
-    document.getElementById("show-howto").addEventListener("click", () => {
-      modal.style.display = "block";
-    });
-    document.getElementById("close-howto").addEventListener("click", () => {
-      modal.style.display = "none";
-    });
-  </script>
 </body>
 </html>

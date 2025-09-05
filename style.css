@@ -1,106 +1,92 @@
-body {
-  background-color: #111;
-  color: #0f0;
-  font-family: monospace;
-  text-align: center;
+/* ベース */
+body{
+  background:#000;
+  color:#0f0;
+  font-family:monospace;
+  text-align:center;
 }
 
-#game {
-  font-size: 20px;   /* ← 16px からアップ */
-  line-height: 1.3;  /* ← 少し広めに */
+/* タイトル等 */
+h1{ margin:12px 0 6px; }
+
+/* 「遊び方」ボタン */
+.howto-link{
+  position:fixed; top:10px; left:10px;
+  background:#111; color:#0f0; border:1px solid #0f0;
+  border-radius:6px; padding:6px 10px; text-decoration:none; font-size:14px;
+}
+.howto-link:hover{ background:#0f0; color:#000; }
+
+/* ゲームボード（画像タイル） */
+#game{
+  display:inline-block;
+  background:#000;
+  border:2px solid #0f0;
+  padding:8px;
+  grid-template-columns: repeat(auto-fit, 20px); /* タイルサイズに揃える */
+  grid-auto-rows: 64px;
+  gap: 0; /* ← 隙間なし */
+}
+#game .row{ line-height:0; } /* 画像の隙間をなくす */
+
+.tile {
+  width: 20px;   /* ← 16 から 32 に */
+  height: 20px;  /* ← 16 から 32 に */
   display: inline-block;
-  text-align: left;
-  background: black;
-  padding: 15px;     /* 枠の余白も少し広く */
-  border: 2px solid #0f0;
+  image-rendering: pixelated;          /* ドットをくっきり */
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;            /* 画像を枠に収める */
 }
 
+.tile--empty{ /* 視界外のマスの占位（透明） */ }
 
-body {
-  background: #000;
-  color: #0f0;
-  font-family: monospace;
-  text-align: center;
+/* 画像ファイル割り当て */
+.tile.wall   { background-image:url("images/wall.png"); }
+.tile.floor  { background-image:url("images/floor.png"); }
+.tile.player { background-image:url("images/player.png"); }
+.tile.enemy  { background-image:url("images/enemy.png"); }
+.tile.stairs { background-image:url("images/stairs.png"); }
+.tile.torch  { background-image:url("images/torch.png"); }
+.tile.item   { background-image:url("images/item.png"); } /* ＋（オーブ） */
+.tile.trap   { background-image:url("images/trap.png"); }
+
+/* ログ */
+#log{
+  width:min(90vw,640px);
+  margin:10px auto 0;
+  text-align:left;
+  max-height:120px; overflow:auto;
+  font-size:14px; line-height:1.3;
 }
 
-.menu, .howto {
-  margin-top: 50px;
+/* モーダル */
+.modal{
+  position:fixed; inset:0; background:rgba(0,0,0,.7);
+  display:none; z-index:1000; color:#fff;
 }
-
-button {
-  margin: 10px;
-  padding: 10px 20px;
-  font-size: 16px;
-  background: #111;
-  color: #0f0;
-  border: 1px solid #0f0;
-  border-radius: 5px;
-  cursor: pointer;
+.modal .modal-content.dark{
+  background:#222; color:#fff;
+  width:min(800px,90vw); margin:48px auto; padding:18px;
+  border-radius:10px;
 }
+.modal table{ width:100%; border-collapse:collapse; margin-top:8px; }
+.modal th, .modal td{ border:1px solid #666; padding:8px 10px; }
+.modal th{ background:#333; }
 
-button:hover {
-  background: #0f0;
-  color: #000;
+/* モーダル内の色見本（文字版） */
+.modal td span{ font-weight:bold; font-size:18px; }
+.modal td .player{ color:blue; }
+.modal td .stairs{ color:orange; }
+.modal td .enemy{ color:rgb(200,50,50); }
+.modal td .item{ color:gold; }
+.modal td .trap{ color:violet; }
+.modal td .torch{ color:#ff6600; }
+
+/* 汎用ボタン */
+button{
+  margin-top:10px; padding:8px 16px; font-size:16px;
+  background:#111; color:#0f0; border:1px solid #0f0; border-radius:6px;
+  cursor:pointer;
 }
-
-.howto-link {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  background: #111;
-  color: #0f0;
-  padding: 5px 10px;
-  border: 1px solid #0f0;
-  border-radius: 5px;
-  text-decoration: none;
-  font-size: 14px;
-}
-
-.howto-link:hover {
-  background: #0f0;
-  color: #000;
-}
-
-/* ゲーム画面用（今のまま #game に限定してOK） */
-#game span.wall   { color: gray; }
-#game span.player { color: blue; font-weight: bold; }
-#game span.stairs { color: orange; }
-#game span.enemy  { color: rgb(112, 5, 5); }
-#game span.item   { color: gold; }
-#game span.trap   { color: purple; font-weight: bold; }
-#game span.torch  { color: #ff8800; font-weight: bold; }
-
-/* 遊び方モーダル専用 */
-#howto-modal td span {
-  font-weight: bold;
-  font-size: 18px; /* ← 少し大きく */
-}
-
-#howto-modal td .player { color: blue; }
-#howto-modal td .stairs { color: orange; }
-#howto-modal td .enemy  { color: rgb(200, 50, 50); } /* ゲームより少し明るめ */
-#howto-modal td .item   { color: gold; }
-#howto-modal td .trap   { color: violet; }
-#howto-modal td .torch  { color: #ff6600; }
-
-span.clear{ color:rgb(255, 255, 0);}
-
-.modal {
-  display: none; /* 初期は非表示 */
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.7);
-}
-
-.modal-content {
-  background: #fff;
-  padding: 20px;
-  margin: 10% auto;
-  width: 60%;
-  border-radius: 8px;
-  text-align: center;
-}
+button:hover{ background:#0f0; color:#000; }
