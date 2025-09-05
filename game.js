@@ -276,7 +276,7 @@ function logMessage(msg){
 // ====== フロア遷移 ======
 function nextFloor(){
   floor++;
-  if(floor>30){
+  if(floor>15){
     logMessage("✨ 迷宮の最深部に到達した！ゲームクリア！");
     document.getElementById("game").innerHTML =
       `<div class="row"></div><h2 class="clear">✨ GAME CLEAR ✨</h2><p>おめでとう！</p>`;

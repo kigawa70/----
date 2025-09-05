@@ -39,8 +39,6 @@ h1{ margin:12px 0 6px; }
   background-size: contain;            /* 画像を枠に収める */
 }
 
-.tile--empty{ /* 視界外のマスの占位（透明） */ }
-
 /* 画像ファイル割り当て */
 .tile.wall   { background-image:url("images/wall.png"); }
 .tile.floor  { background-image:url("images/floor.png"); }
