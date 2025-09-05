@@ -278,8 +278,16 @@ function nextFloor(){
   floor++;
   if(floor>15){
     logMessage("✨ 迷宮の最深部に到達した！ゲームクリア！");
-    document.getElementById("game").innerHTML =
-      `<div class="row"></div><h2 class="clear">✨ GAME CLEAR ✨</h2><p>おめでとう！</p>`;
+    document.getElementById("game").innerHTML = `
+      <h2>✨ GAME CLEAR ✨</h2>
+      <p>おめでとう！</p>
+      <button id="resetBtn">リセット</button>
+    `;
+
+    // ボタンにリセット処理を追加
+    document.getElementById("resetBtn").onclick = () => {
+      resetGame();
+    };
     return;
   }
   generateMap(); placePlayer(); render();
