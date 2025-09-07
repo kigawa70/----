@@ -247,7 +247,11 @@ function render(){
       }else if(map[y][x]==="#"){
         html += `<span class="tile wall"></span>`;
       }else if(map[y][x]===">"){
-        html += `<span class="tile stairs"></span>`;
+        if(floor < 15){
+          html += `<span class="tile stairs"></span>`;
+        }else{
+          html += `<span class="tile treasure"></span>`;
+        }
       }else{
         html += `<span class="tile floor"></span>`;
       }

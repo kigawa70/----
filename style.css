@@ -23,15 +23,15 @@ h1{ margin:12px 0 6px; }
   background:#000;
   border:2px solid #0f0;
   padding:8px;
-  grid-template-columns: repeat(auto-fit, 24px); /* タイルサイズに揃える */
+  grid-template-columns: repeat(auto-fit, 30px); /* タイルサイズに揃える */
   grid-auto-rows: 64px;
   gap: 0; /* ← 隙間なし */
 }
 #game .row{ line-height:0; } /* 画像の隙間をなくす */
 
 .tile {
-  width: 24px;   /* ← 16 から 32 に */
-  height: 24px;  /* ← 16 から 32 に */
+  width: 30px;   /* ← 16 から 32 に */
+  height: 30px;  /* ← 16 から 32 に */
   display: inline-block;
   image-rendering: pixelated;          /* ドットをくっきり */
   background-repeat: no-repeat;
@@ -48,6 +48,7 @@ h1{ margin:12px 0 6px; }
 .tile.torch  { background-image:url("images/torch.png"); }
 .tile.item   { background-image:url("images/item.png"); } /* ＋（オーブ） */
 .tile.trap   { background-image:url("images/trap.png"); }
+.tile.treasure{background-image: url("images/treasure.png");}
 
 /* ログ */
 #log{
